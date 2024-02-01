@@ -1,0 +1,37 @@
+{
+  "name": "password-tester",
+  "version": "0.0.0",
+  "description": "Test password/phrases to ensure strong entropy, based on the latest guidance.",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/password-tester.umd.js",
+  "module": "./dist/password-tester.es.js",
+  "exports": {
+    ".": {
+      "require": "./dist/password-tester.umd.js",
+      "import": "./dist/password-tester.es.js"
+    }
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "test": "vitest",
+    "format": "biome format --write ./lib",
+    "lint": "biome lint ./lib",
+    "fix": "biome check --apply ./lib",
+    "publish": "biome ci ./lib && npm version patch && npm publish"
+  },
+  "author": "David Sint",
+  "license": "(MIT OR Apache-2.0)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DavidSint/password-tester.git"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "1.5.3",
+    "vite": "^5.0.12",
+    "vite-plugin-dts": "^3.7.2",
+    "vitest": "^1.2.2"
+  }
+}
