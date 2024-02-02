@@ -1,4 +1,9 @@
-export type PasswordErrorCode = "MIN_CHARS_NOT_MET" | "ENTROPY_TOO_LOW";
+import { checkIfPasswordHasBeenPwned } from "./hibp";
+
+export type PasswordErrorCode =
+	| "MIN_CHARS_NOT_MET"
+	| "ENTROPY_TOO_LOW"
+	| "FAILED_TO_CHECK_PASSWORD_REUSE";
 
 export type PasswordStrength =
 	| "EXCELLENT"
@@ -18,7 +23,8 @@ export type PasswordReport = {
 };
 
 export type TestPasswordOptions = {
-	disableEntropyLowerBound: boolean;
+	enableEntropyLowerBound?: boolean;
+	enableReUsedPasswordCheck?: boolean;
 };
 
 function mapStrengthLevelToEnum(level: number) {
@@ -40,18 +46,52 @@ function mapStrengthLevelToEnum(level: number) {
 	return "ERROR";
 }
 
-export function testPassword(
+function calculatePasswordEntropy(password: string) {
+	const charsetSize = new Set(password).size;
+
+	const entropy = Math.log2(charsetSize ** password.length);
+	return entropy;
+}
+
+function calculateStrengthLevel(entropy: number): PasswordStrengthLevel {
+	if (entropy >= 100) {
+		return 5; // EXCELLENT
+	}
+	if (entropy >= 80) {
+		return 4; // VERY GOOD
+	}
+	if (entropy >= 60) {
+		return 3; // GOOD
+	}
+	if (entropy > 30) {
+		return 2; // FAIR
+	}
+	return 1; // POOR
+}
+
+function getOptions(options: TestPasswordOptions | undefined) {
+	const enableEntropyLowerBound = options?.enableEntropyLowerBound ?? true;
+	const enableReUsedPasswordCheck = options?.enableReUsedPasswordCheck ?? true;
+	return {
+		enableEntropyLowerBound,
+		enableReUsedPasswordCheck,
+	};
+}
+
+export async function testPassword(
 	password: string,
 	options?: TestPasswordOptions,
-): PasswordReport {
+): Promise<PasswordReport> {
 	if (typeof password !== "string") {
 		throw new Error("Password must be string");
 	}
 
-	const LOWER_ALLOWED_ENTROPY = 25;
-	const charsetSize = new Set(password).size;
+	const { enableEntropyLowerBound, enableReUsedPasswordCheck } =
+		getOptions(options);
 
-	const entropy = Math.log2(charsetSize ** password.length);
+	const LOWER_ALLOWED_ENTROPY = 25;
+
+	const entropy = calculatePasswordEntropy(password);
 
 	if (password.length < 8) {
 		return {
@@ -62,7 +102,7 @@ export function testPassword(
 		};
 	}
 
-	if (!options?.disableEntropyLowerBound && entropy <= LOWER_ALLOWED_ENTROPY) {
+	if (enableEntropyLowerBound && entropy <= LOWER_ALLOWED_ENTROPY) {
 		return {
 			errorCode: "ENTROPY_TOO_LOW",
 			strength: "ERROR",
@@ -71,20 +111,32 @@ export function testPassword(
 		};
 	}
 
-	let strengthLevel: PasswordStrengthLevel = 1; // POOR
-	if (entropy >= 100) {
-		strengthLevel = 5; // EXCELLENT
-	} else if (entropy >= 80) {
-		strengthLevel = 4; // VERY GOOD
-	} else if (entropy >= 60) {
-		strengthLevel = 3; // GOOD
-	} else if (entropy > 30) {
-		strengthLevel = 2; // FAIR
+	let errorCode: PasswordErrorCode | undefined;
+	if (enableReUsedPasswordCheck) {
+		try {
+			const hasBeenPreviouslyPwned =
+				await checkIfPasswordHasBeenPwned(password);
+			if (hasBeenPreviouslyPwned) {
+				return {
+					strength: "POOR",
+					strengthLevel: 1,
+					entropy,
+				};
+			}
+		} catch (e) {
+			errorCode = "FAILED_TO_CHECK_PASSWORD_REUSE";
+		}
 	}
 
-	return {
+	const strengthLevel = calculateStrengthLevel(entropy);
+
+	const result: PasswordReport = {
 		strength: mapStrengthLevelToEnum(strengthLevel),
 		strengthLevel: strengthLevel,
 		entropy,
 	};
+	if (errorCode) {
+		result.errorCode = errorCode;
+	}
+	return result;
 }
