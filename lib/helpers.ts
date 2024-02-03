@@ -23,6 +23,7 @@ export type PasswordReport = {
 export type TestPasswordOptions = {
 	enableEntropyLowerBound?: boolean;
 	enableReUsedPasswordCheck?: boolean;
+	requireReUsedPasswordCheckSuccess?: boolean;
 };
 
 export function mapStrengthLevelToEnum(level: number) {
@@ -70,8 +71,11 @@ export function calculateStrengthLevel(entropy: number): PasswordStrengthLevel {
 export function getOptions(options: TestPasswordOptions | undefined) {
 	const enableEntropyLowerBound = options?.enableEntropyLowerBound ?? true;
 	const enableReUsedPasswordCheck = options?.enableReUsedPasswordCheck ?? true;
+	const requireReUsedPasswordCheckSuccess =
+		options?.requireReUsedPasswordCheckSuccess ?? true;
 	return {
 		enableEntropyLowerBound,
 		enableReUsedPasswordCheck,
+		requireReUsedPasswordCheckSuccess,
 	};
 }

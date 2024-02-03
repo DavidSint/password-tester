@@ -140,7 +140,7 @@ describe("Rule Error Scenarios", () => {
 			entropy: 24,
 		});
 	});
-	test("low entropy password", async () => {
+	test("failed reused password request returns error", async () => {
 		const fetchSafeBox = global.fetch;
 		global.fetch = vi.fn();
 
@@ -149,6 +149,27 @@ describe("Rule Error Scenarios", () => {
 		} as Response);
 
 		const reusedPasswordReportWithError = await testPassword("password123");
+
+		expect(reusedPasswordReportWithError).toEqual({
+			errorCode: "FAILED_TO_CHECK_PASSWORD_REUSE",
+			strength: "ERROR",
+			strengthLevel: 0,
+			entropy: 36.541209043760986,
+		});
+
+		global.fetch = fetchSafeBox;
+	});
+	test("failed reused password request is allowed, but returns error", async () => {
+		const fetchSafeBox = global.fetch;
+		global.fetch = vi.fn();
+
+		(fetch as MockedFunction<typeof fetch>).mockResolvedValueOnce({
+			ok: false,
+		} as Response);
+
+		const reusedPasswordReportWithError = await testPassword("password123", {
+			requireReUsedPasswordCheckSuccess: false,
+		});
 
 		expect(reusedPasswordReportWithError).toEqual({
 			errorCode: "FAILED_TO_CHECK_PASSWORD_REUSE",
@@ -182,5 +203,41 @@ describe("Re-Used Password Check", () => {
 			strength: "POOR",
 			strengthLevel: 1,
 		});
+	});
+	test("when allowed by options, password does not error if reused request failure occurs, but error code is returned", async () => {
+		const fetchSafeBox = global.fetch;
+		global.fetch = vi.fn();
+
+		(fetch as MockedFunction<typeof fetch>).mockResolvedValueOnce({
+			ok: false,
+		} as Response);
+
+		const report = await testPassword("password123", {
+			requireReUsedPasswordCheckSuccess: false,
+		});
+		expect(report).toMatchObject({
+			errorCode: "FAILED_TO_CHECK_PASSWORD_REUSE",
+			strength: "FAIR",
+			strengthLevel: 2,
+		});
+
+		global.fetch = fetchSafeBox;
+	});
+	test("password errors if reused and request failure is not allowed", async () => {
+		const fetchSafeBox = global.fetch;
+		global.fetch = vi.fn();
+
+		(fetch as MockedFunction<typeof fetch>).mockResolvedValueOnce({
+			ok: false,
+		} as Response);
+
+		const report = await testPassword("password123");
+		expect(report).toMatchObject({
+			errorCode: "FAILED_TO_CHECK_PASSWORD_REUSE",
+			strength: "ERROR",
+			strengthLevel: 0,
+		});
+
+		global.fetch = fetchSafeBox;
 	});
 });

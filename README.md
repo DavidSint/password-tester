@@ -12,16 +12,42 @@ npm install password-tester
 
 ## Usage
 
+### Simple Usage
+
+```typescript
+import { testPassword } from 'password-tester';
+
+// Test password strength
+const report = await testPassword("MySuperSecurePassword123!");
+
+// Output result
+console.log(report);
+/* Will output:
+  {
+    strength: 'EXCELLENT',
+    strengthLevel: 5,
+    entropy: 104.24812503605781
+  }
+*/
+```
+
+### With Options
+
 ```typescript
 import { testPassword, PasswordReport, TestPasswordOptions } from 'password-tester';
 
 // Define password
 const password: string = "MySuperSecurePassword123!";
 
-// Optional configuration for testing password (if this parameter is omitted, or a field left empty, the options will be set to the safest possible by default)
+/*
+  Optional configuration for testing password
+  (if this parameter is omitted, or a field left empty, the options will be set
+  to the safest possible by default)
+*/
 const options: TestPasswordOptions = {
   enableEntropyLowerBound: true,
-  enableReUsedPasswordCheck: true
+  enableReUsedPasswordCheck: true,
+  requireReUsedPasswordCheckSuccess: true
 };
 
 // Test password strength
@@ -54,10 +80,12 @@ This function tests the strength of a given password and returns a report object
 type TestPasswordOptions = {
 	enableEntropyLowerBound?: boolean;
   enableReUsedPasswordCheck?: boolean
+  requireReUsedPasswordCheckSuccess?: boolean
 };
 ```
 - `enableEntropyLowerBound`: Ensures that a report will include an error if the entropy is too low. If this field is omitted, this will be `true` by default.
 - `enableReUsedPasswordCheck`: Will check the password to see if it has been previously exposed in a breach using the _Have I Been Pwned_ database. If this field is omitted, this will be `true` by default.
+- `requireReUsedPasswordCheckSuccess`: Will return an error in the report if the _Have I Been Pwned_ database check fails. If `false`, then the `errorCode` will still be returned, but the rest of the report will read as if the database check was successful.
 
 #### `PasswordErrorCode`
 
@@ -66,7 +94,7 @@ type PasswordErrorCode = "MIN_CHARS_NOT_MET" | "ENTROPY_TOO_LOW" | "FAILED_TO_CH
 ```
 - `MIN_CHARS_NOT_MET`: Error code indicating the password does not meet the minimum character requirement (8 characters).
 - `ENTROPY_TOO_LOW`: Error code indicating the password's entropy is too low (less than 25 bits of entropy).
-- `FAILED_TO_CHECK_PASSWORD_REUSE`: The library was unable to get a response from _Have I Been Pwned_ to check if the password has been previously exposed. **The rest of the report, including password strength will still be returned, even with this error code**
+- `FAILED_TO_CHECK_PASSWORD_REUSE`: The library was unable to get a response from _Have I Been Pwned_ to check if the password has been previously exposed.
 
 #### `PasswordStrength`
 

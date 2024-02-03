@@ -17,8 +17,11 @@ export async function testPassword(
 		throw new Error("Password must be string");
 	}
 
-	const { enableEntropyLowerBound, enableReUsedPasswordCheck } =
-		getOptions(options);
+	const {
+		enableEntropyLowerBound,
+		enableReUsedPasswordCheck,
+		requireReUsedPasswordCheckSuccess,
+	} = getOptions(options);
 
 	const LOWER_ALLOWED_ENTROPY = 25;
 
@@ -56,6 +59,14 @@ export async function testPassword(
 			}
 		} catch (e) {
 			errorCode = "FAILED_TO_CHECK_PASSWORD_REUSE";
+			if (requireReUsedPasswordCheckSuccess) {
+				return {
+					errorCode,
+					strength: "ERROR",
+					strengthLevel: 0,
+					entropy,
+				};
+			}
 		}
 	}
 
