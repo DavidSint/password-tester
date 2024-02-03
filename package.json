@@ -28,6 +28,7 @@
     "type": "git",
     "url": "git+https://github.com/DavidSint/password-tester.git"
   },
+  "keywords": ["password", "security", "devsecops", "validation", "validator", "test", "password tester", "checker", "strength", "password strength", "passphrase", "registration", "change password", "have i been pwned"],
   "devDependencies": {
     "@biomejs/biome": "1.5.3",
     "@vitest/coverage-v8": "^1.2.2",
