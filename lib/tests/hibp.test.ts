@@ -24,22 +24,24 @@ describe("Have I Been Pwned", () => {
 
 		global.fetch = fetchSafeBox;
 	});
-  test("non-node web crypto API hash", async () => {
-    const cryptoSafeBox = globalThis.crypto;
+	test("non-node web crypto API hash", async () => {
+		const cryptoSafeBox = globalThis.crypto;
 
 		globalThis.crypto = {
-      getRandomValues: vi.fn().mockImplementation(async () => new ArrayBuffer(16)),
-      randomUUID: vi.fn() as MockedFunction<typeof cryptoSafeBox.randomUUID>,
-      subtle: {
-        ...cryptoSafeBox?.subtle,
-        digest: vi.fn().mockImplementation(async () => new ArrayBuffer(16))
-      }
-    }
+			getRandomValues: vi
+				.fn()
+				.mockImplementation(async () => new ArrayBuffer(16)),
+			randomUUID: vi.fn() as MockedFunction<typeof cryptoSafeBox.randomUUID>,
+			subtle: {
+				...cryptoSafeBox?.subtle,
+				digest: vi.fn().mockImplementation(async () => new ArrayBuffer(16)),
+			},
+		};
 
-    await createSha1Hash("123934534f", {} as NodeJS.Process),
+		await createSha1Hash("123934534f", {} as NodeJS.Process);
 
-    expect(globalThis.crypto.subtle.digest).toHaveBeenCalled()
+		expect(globalThis.crypto.subtle.digest).toHaveBeenCalled();
 
-    globalThis.crypto = cryptoSafeBox
-  })
+		globalThis.crypto = cryptoSafeBox;
+	});
 });

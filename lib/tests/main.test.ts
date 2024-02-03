@@ -141,7 +141,7 @@ describe("Rule Error Scenarios", () => {
 		});
 	});
 	test("low entropy password", async () => {
-    const fetchSafeBox = global.fetch;
+		const fetchSafeBox = global.fetch;
 		global.fetch = vi.fn();
 
 		(fetch as MockedFunction<typeof fetch>).mockResolvedValueOnce({
@@ -176,13 +176,11 @@ describe("Thrown Error Scenarios", () => {
 });
 
 describe("Re-Used Password Check", () => {
-  test("password is POOR if reused", async () => {
-		const report = await testPassword(
-			"password123"
-		);
+	test("password is POOR if reused", async () => {
+		const report = await testPassword("password123");
 		expect(report).toMatchObject({
 			strength: "POOR",
 			strengthLevel: 1,
 		});
 	});
-})
+});
