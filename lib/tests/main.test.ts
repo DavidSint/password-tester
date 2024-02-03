@@ -1,4 +1,4 @@
-import { describe, expect, test } from "vitest";
+import { MockedFunction, describe, expect, test, vi } from "vitest";
 import { testPassword } from "../main";
 
 describe("Entropy Scenarios", () => {
@@ -140,6 +140,31 @@ describe("Rule Error Scenarios", () => {
 			entropy: 24,
 		});
 	});
+	test("low entropy password", async () => {
+    const fetchSafeBox = global.fetch;
+		global.fetch = vi.fn();
+
+		(fetch as MockedFunction<typeof fetch>).mockResolvedValueOnce({
+			ok: false,
+		} as Response);
+
+		const reusedPasswordReportWithError = await testPassword("password123");
+
+		expect(reusedPasswordReportWithError).toEqual({
+			errorCode: "FAILED_TO_CHECK_PASSWORD_REUSE",
+			strength: "FAIR",
+			strengthLevel: 2,
+			entropy: 36.541209043760986,
+		});
+
+		global.fetch = fetchSafeBox;
+	});
+	test("no errorCode if no errors", async () => {
+		const report = await testPassword("abcdefghijklmnopqrstuvw", {
+			enableReUsedPasswordCheck: false,
+		});
+		expect(report.errorCode).toBeUndefined();
+	});
 });
 
 describe("Thrown Error Scenarios", () => {
@@ -149,3 +174,15 @@ describe("Thrown Error Scenarios", () => {
 		expect(res).rejects.toThrowError("Password must be string");
 	});
 });
+
+describe("Re-Used Password Check", () => {
+  test("password is POOR if reused", async () => {
+		const report = await testPassword(
+			"password123"
+		);
+		expect(report).toMatchObject({
+			strength: "POOR",
+			strengthLevel: 1,
+		});
+	});
+})

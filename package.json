@@ -1,6 +1,6 @@
 {
   "name": "password-tester",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Test password/phrases to ensure strong entropy, based on the latest guidance.",
   "files": [
     "dist"
@@ -17,6 +17,7 @@
     "dev": "vite",
     "build": "vite build",
     "test": "vitest",
+    "coverage": "vitest run --coverage",
     "format": "biome format --write ./lib",
     "lint": "biome lint ./lib",
     "fix": "biome check --apply ./lib"
@@ -29,6 +30,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "1.5.3",
+    "@vitest/coverage-v8": "^1.2.2",
     "vite": "^5.0.12",
     "vite-plugin-dts": "^3.7.2",
     "vitest": "^1.2.2"

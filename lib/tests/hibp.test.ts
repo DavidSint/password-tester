@@ -1,5 +1,5 @@
-import { MockedFunction, afterEach, describe, expect, test, vi } from "vitest";
-import { checkIfPasswordHasBeenPwned } from "../hibp";
+import { MockedFunction, describe, expect, test, vi } from "vitest";
+import { checkIfPasswordHasBeenPwned, createSha1Hash } from "../hibp";
 
 describe("Have I Been Pwned", () => {
 	test("password been reused", async () => {
@@ -24,4 +24,22 @@ describe("Have I Been Pwned", () => {
 
 		global.fetch = fetchSafeBox;
 	});
+  test("non-node web crypto API hash", async () => {
+    const cryptoSafeBox = globalThis.crypto;
+
+		globalThis.crypto = {
+      getRandomValues: vi.fn().mockImplementation(async () => new ArrayBuffer(16)),
+      randomUUID: vi.fn() as MockedFunction<typeof cryptoSafeBox.randomUUID>,
+      subtle: {
+        ...cryptoSafeBox?.subtle,
+        digest: vi.fn().mockImplementation(async () => new ArrayBuffer(16))
+      }
+    }
+
+    await createSha1Hash("123934534f", {} as NodeJS.Process),
+
+    expect(globalThis.crypto.subtle.digest).toHaveBeenCalled()
+
+    globalThis.crypto = cryptoSafeBox
+  })
 });
