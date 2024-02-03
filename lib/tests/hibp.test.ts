@@ -27,16 +27,19 @@ describe("Have I Been Pwned", () => {
 	test("non-node web crypto API hash", async () => {
 		const cryptoSafeBox = globalThis.crypto;
 
-		globalThis.crypto = {
-			getRandomValues: vi
-				.fn()
-				.mockImplementation(async () => new ArrayBuffer(16)),
-			randomUUID: vi.fn() as MockedFunction<typeof cryptoSafeBox.randomUUID>,
-			subtle: {
-				...cryptoSafeBox?.subtle,
-				digest: vi.fn().mockImplementation(async () => new ArrayBuffer(16)),
-			},
-		};
+    Object.defineProperty(globalThis, 'crypto', {
+      value: {
+          getRandomValues: vi
+              .fn()
+              .mockImplementation(async () => new ArrayBuffer(16)),
+          randomUUID: vi.fn() as MockedFunction<typeof cryptoSafeBox.randomUUID>,
+          subtle: {
+              ...cryptoSafeBox?.subtle,
+              digest: vi.fn().mockImplementation(async () => new ArrayBuffer(16)),
+          },
+      },
+      writable: true,
+  });
 
 		await createSha1Hash("123934534f", {} as NodeJS.Process);
 
