@@ -10,5 +10,8 @@ module.exports = defineConfig({
       fileName: (format) => `password-tester.${format}.js`
     }
   },
-  plugins: [dts()]
+  plugins: [dts()],
+  test: {
+    pool: 'forks',
+  },
 })
