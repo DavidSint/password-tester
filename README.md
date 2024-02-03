@@ -7,8 +7,11 @@ This TypeScript library provides a function to test the strength of passwords ba
 You can install the library via npm:
 
 ```bash
-npm install password-tester
+npm install --save-exact password-tester
 ```
+
+> [!IMPORTANT]
+> We use `--save-exact` in the install command because this library is intended to test highly confidential passwords. Adding this flag pins the package to the current version of the library. It is a best practice to fix the package version on code that you have personally read and understand.
 
 ## Usage
 
@@ -78,7 +81,7 @@ This function tests the strength of a given password and returns a report object
 #### `TestPasswordOptions`
 ```typescript
 type TestPasswordOptions = {
-	enableEntropyLowerBound?: boolean;
+  enableEntropyLowerBound?: boolean;
   enableReUsedPasswordCheck?: boolean
   requireReUsedPasswordCheckSuccess?: boolean
 };
