@@ -24,6 +24,9 @@ describe("Have I Been Pwned", () => {
 
 		global.fetch = fetchSafeBox;
 	});
+});
+
+describe("createSha1 Tests", () => {
 	test("non-node web crypto API hash", async () => {
 		const cryptoSafeBox = globalThis.crypto;
 
@@ -41,7 +44,20 @@ describe("Have I Been Pwned", () => {
 			writable: true,
 		});
 
-		await createSha1Hash("123934534f", {} as NodeJS.Process);
+		const referenceError = (() => {
+			try {
+				// Attempting to access an undefined variable, which will throw a ReferenceError to use
+				// @ts-ignore
+				console.log(undefinedVariable);
+			} catch (error) {
+				return error as ReferenceError;
+			}
+		})();
+
+		await createSha1Hash(
+			"123934534f",
+			referenceError as unknown as NodeJS.Process,
+		);
 
 		expect(globalThis.crypto.subtle.digest).toHaveBeenCalled();
 

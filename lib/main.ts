@@ -1,6 +1,7 @@
 import {
 	PasswordErrorCode,
 	PasswordReport,
+	PasswordWarningCode,
 	TestPasswordOptions,
 	calculatePasswordEntropy,
 	calculateStrengthLevel,
@@ -45,28 +46,29 @@ export async function testPassword(
 		};
 	}
 
-	let errorCode: PasswordErrorCode | undefined;
+	let warningCode: PasswordWarningCode | undefined;
 	if (enableReUsedPasswordCheck) {
 		try {
 			const hasBeenPreviouslyPwned =
 				await checkIfPasswordHasBeenPwned(password);
 			if (hasBeenPreviouslyPwned) {
 				return {
+					warningCode: "PASSWORD_PREVIOUSLY_EXPOSED",
 					strength: "POOR",
 					strengthLevel: 1,
 					entropy,
 				};
 			}
 		} catch (e) {
-			errorCode = "FAILED_TO_CHECK_PASSWORD_REUSE";
 			if (requireReUsedPasswordCheckSuccess) {
 				return {
-					errorCode,
+					errorCode: "FAILED_TO_CHECK_PASSWORD_REUSE",
 					strength: "ERROR",
 					strengthLevel: 0,
 					entropy,
 				};
 			}
+			warningCode = "FAILED_TO_CHECK_PASSWORD_REUSE";
 		}
 	}
 
@@ -77,8 +79,8 @@ export async function testPassword(
 		strengthLevel: strengthLevel,
 		entropy,
 	};
-	if (errorCode) {
-		result.errorCode = errorCode;
+	if (warningCode) {
+		result.warningCode = warningCode;
 	}
 	return result;
 }
