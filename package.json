@@ -1,6 +1,6 @@
 {
   "name": "password-tester",
-  "version": "1.0.1",
+  "version": "1.2.0",
   "description": "Test password/phrases to ensure strong entropy and no reuse from a password breach, based on the latest guidance.",
   "files": [
     "dist"
@@ -28,7 +28,22 @@
     "type": "git",
     "url": "git+https://github.com/DavidSint/password-tester.git"
   },
-  "keywords": ["password", "security", "devsecops", "validation", "validator", "test", "password tester", "checker", "strength", "password strength", "passphrase", "registration", "change password", "have i been pwned"],
+  "keywords": [
+    "password",
+    "security",
+    "devsecops",
+    "validation",
+    "validator",
+    "test",
+    "password tester",
+    "checker",
+    "strength",
+    "password strength",
+    "passphrase",
+    "registration",
+    "change password",
+    "have i been pwned"
+  ],
   "devDependencies": {
     "@biomejs/biome": "1.5.3",
     "@vitest/coverage-v8": "^1.2.2",

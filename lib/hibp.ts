@@ -1,11 +1,17 @@
 export async function createSha1Hash(
 	password: string,
-	nodeProcess = process,
+	nodeProcess?: NodeJS.Process,
 ): Promise<string> {
+	let nodeProcessOrUndefined: NodeJS.Process | undefined;
+	try {
+		nodeProcessOrUndefined = nodeProcess || process;
+	} catch (e) {
+		nodeProcessOrUndefined = undefined;
+	}
 	const isNode =
-		typeof nodeProcess !== "undefined" &&
-		nodeProcess.versions != null &&
-		nodeProcess.versions.node != null;
+		nodeProcessOrUndefined !== undefined &&
+		nodeProcessOrUndefined.versions != null &&
+		nodeProcessOrUndefined.versions.node != null;
 	if (isNode) {
 		const { createHash } = require("crypto");
 		const hash = createHash("sha1");

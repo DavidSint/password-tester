@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Password Tester Example</title>
+    <script src="../../dist/password-tester.umd.js"></script>
+    <style>
+      h1 {
+        margin: auto;
+        width: fit-content;
+      }
+
+      form {
+        margin: auto;
+        width: 250px;
+      }
+
+      .error {
+        color: red;
+      }
+      .warning, 
+      .fair {
+        color: gold;
+      }
+      .good {
+        color: darkseagreen;
+      }
+      .very_good {
+        color: mediumspringgreen;
+      }
+      .excellent {
+        color: greenyellow;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Password Tester Example</h1>
+    <hr />
+    <form>
+      <fieldset>
+        <div>
+          <label for="password">Password: </label>
+          <input id="password" type="password" />
+        </div>
+        <div>
+          <span> Entropy: </span>
+          <span id="password-entropy">0</span>
+        </div>
+        <div>
+          <span> Password Strength: </span>
+          <span id="password-strength">N/A</span>
+        </div>
+        <div>
+          <span id="password-warning-label"></span>
+          <span id="password-warning" class="warning"></span>
+        </div>
+        <div>
+          <span id="password-error-label"></span>
+          <span id="password-error" class="error"></span>
+        </div>
+      </fieldset>
+    </form>
+    <script>
+      const { testPassword } = window["password-tester"];
+      document.addEventListener("DOMContentLoaded", function () {
+        const passwordInput = document.getElementById("password");
+        const entropySpan = document.getElementById("password-entropy");
+        const strengthSpan = document.getElementById("password-strength");
+        const warningLabelSpan = document.getElementById("password-warning-label");
+        const warningSpan = document.getElementById("password-warning");
+        const errorLabelSpan = document.getElementById("password-error-label");
+        const errorSpan = document.getElementById("password-error");
+
+        passwordInput.addEventListener("input", async function () {
+          const inputValue = passwordInput.value;
+          if (inputValue.length > 0) {
+            const { errorCode, warningCode, strength, entropy, strengthLevel } =
+              await testPassword(inputValue);
+
+            entropySpan.innerText = entropy ?? "0";
+            strengthSpan.innerText = strength ?? "N/A";
+
+            warningLabelSpan.innerText = warningCode ? "Warning: " : "";
+            warningSpan.innerText = warningCode ?? "";
+
+            errorLabelSpan.innerText = errorCode ? "Error: " : "";
+            errorSpan.innerText = errorCode ?? "";
+
+            switch (strengthLevel) {
+              case 0:
+              case 1:
+                strengthSpan.className = "error";
+                break;
+              case 2:
+                strengthSpan.className = "fair";
+                break;
+              case 3:
+                strengthSpan.className = "good";
+                break;
+              case 4:
+                strengthSpan.className = "very_good";
+                break;
+              case 5:
+                strengthSpan.className = "excellent";
+                break;
+
+              default:
+                strengthSpan.className = "";
+                break;
+            }
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

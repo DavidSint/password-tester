@@ -3,6 +3,10 @@ export type PasswordErrorCode =
 	| "ENTROPY_TOO_LOW"
 	| "FAILED_TO_CHECK_PASSWORD_REUSE";
 
+export type PasswordWarningCode =
+	| "PASSWORD_PREVIOUSLY_EXPOSED"
+	| "FAILED_TO_CHECK_PASSWORD_REUSE";
+
 export type PasswordStrength =
 	| "EXCELLENT"
 	| "VERY_GOOD"
@@ -14,10 +18,11 @@ export type PasswordStrength =
 export type PasswordStrengthLevel = 5 | 4 | 3 | 2 | 1 | 0;
 
 export type PasswordReport = {
-	errorCode?: PasswordErrorCode;
 	strength: PasswordStrength;
 	strengthLevel: PasswordStrengthLevel;
 	entropy: number;
+	warningCode?: PasswordWarningCode;
+	errorCode?: PasswordErrorCode;
 };
 
 export type TestPasswordOptions = {

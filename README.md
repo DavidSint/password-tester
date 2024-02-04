@@ -88,7 +88,33 @@ type TestPasswordOptions = {
 ```
 - `enableEntropyLowerBound`: Ensures that a report will include an error if the entropy is too low. If this field is omitted, this will be `true` by default.
 - `enableReUsedPasswordCheck`: Will check the password to see if it has been previously exposed in a breach using the _Have I Been Pwned_ database. If this field is omitted, this will be `true` by default.
-- `requireReUsedPasswordCheckSuccess`: Will return an error in the report if the _Have I Been Pwned_ database check fails. If `false`, then the `errorCode` will still be returned, but the rest of the report will read as if the database check was successful.
+- `requireReUsedPasswordCheckSuccess`: Will return an `errorCode` in the report if the _Have I Been Pwned_ database check fails. If `false`, then instead of an `errorCode`, a `warningCode` will be returned and the rest of the report will read as if the database check was successful.
+
+#### `PasswordReport`
+
+```typescript
+type PasswordReport = {
+  strength: PasswordStrength;
+  strengthLevel: PasswordStrengthLevel;
+  entropy: number;
+  warningCode?: PasswordWarningCode;
+  errorCode?: PasswordErrorCode;
+};
+```
+
+- `strength`: Password strength represented as PasswordStrength type.
+- `strengthLevel`: Password strength level represented as PasswordStrengthLevel type.
+- `entropy`: Entropy value calculated for the password.
+- `warningCode`: Optional warning code to alert you if the password test encounters a non-blocking issue.
+- `errorCode`: Optional error code if the password test encounters an error.
+
+#### `PasswordWarningCode`
+
+```typescript
+export type PasswordWarningCode = "PASSWORD_PREVIOUSLY_EXPOSED" | "FAILED_TO_CHECK_PASSWORD_REUSE";
+```
+- `PASSWORD_PREVIOUSLY_EXPOSED`: It has been detected that the password tested has already been hacked and exposed as part of a password breach, according to _Have I Been Pwned_. The password strength, should always be `POOR`.
+- `FAILED_TO_CHECK_PASSWORD_REUSE`: If the option to `requireReUsedPasswordCheckSuccess` is `false`, then this warning may show. It means that it was not possible to check the password breach database, and it cannot be verified if the password has already been exposed.
 
 #### `PasswordErrorCode`
 
@@ -123,22 +149,6 @@ type PasswordStrengthLevel = 5 | 4 | 3 | 2 | 1 | 0;
 - `2`: Fair password strength level.
 - `1`: Poor password strength level.
 - `0`: Error, no password strength level.
-
-#### `PasswordReport`
-
-```typescript
-type PasswordReport = {
-  errorCode?: PasswordErrorCode;
-  strength: PasswordStrength;
-  strengthLevel: PasswordStrengthLevel;
-  entropy: number;
-};
-```
-
-- `errorCode`: Optional error code if the password test encounters an error.
-- `strength`: Password strength represented as PasswordStrength type.
-- `strengthLevel`: Password strength level represented as PasswordStrengthLevel type.
-- `entropy`: Entropy value calculated for the password.
 
 ## License
 

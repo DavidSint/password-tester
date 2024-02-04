@@ -159,7 +159,7 @@ describe("Rule Error Scenarios", () => {
 
 		global.fetch = fetchSafeBox;
 	});
-	test("failed reused password request is allowed, but returns error", async () => {
+	test("failed reused password request is allowed, but returns warning", async () => {
 		const fetchSafeBox = global.fetch;
 		global.fetch = vi.fn();
 
@@ -172,7 +172,7 @@ describe("Rule Error Scenarios", () => {
 		});
 
 		expect(reusedPasswordReportWithError).toEqual({
-			errorCode: "FAILED_TO_CHECK_PASSWORD_REUSE",
+			warningCode: "FAILED_TO_CHECK_PASSWORD_REUSE",
 			strength: "FAIR",
 			strengthLevel: 2,
 			entropy: 36.541209043760986,
@@ -197,14 +197,15 @@ describe("Thrown Error Scenarios", () => {
 });
 
 describe("Re-Used Password Check", () => {
-	test("password is POOR if reused", async () => {
+	test("password is POOR with warning if reused", async () => {
 		const report = await testPassword("password123");
 		expect(report).toMatchObject({
+			warningCode: "PASSWORD_PREVIOUSLY_EXPOSED",
 			strength: "POOR",
 			strengthLevel: 1,
 		});
 	});
-	test("when allowed by options, password does not error if reused request failure occurs, but error code is returned", async () => {
+	test("when allowed by options, password does not error if reused request failure occurs, but warning code is returned", async () => {
 		const fetchSafeBox = global.fetch;
 		global.fetch = vi.fn();
 
@@ -216,7 +217,7 @@ describe("Re-Used Password Check", () => {
 			requireReUsedPasswordCheckSuccess: false,
 		});
 		expect(report).toMatchObject({
-			errorCode: "FAILED_TO_CHECK_PASSWORD_REUSE",
+			warningCode: "FAILED_TO_CHECK_PASSWORD_REUSE",
 			strength: "FAIR",
 			strengthLevel: 2,
 		});
