@@ -1,24 +1,4 @@
-export async function createSha1Hash(
-	password: string,
-	nodeProcess?: NodeJS.Process,
-): Promise<string> {
-	let nodeProcessOrUndefined: NodeJS.Process | undefined;
-	try {
-		nodeProcessOrUndefined = nodeProcess || process;
-	} catch (e) {
-		nodeProcessOrUndefined = undefined;
-	}
-	const isNode =
-		nodeProcessOrUndefined !== undefined &&
-		nodeProcessOrUndefined.versions != null &&
-		nodeProcessOrUndefined.versions.node != null;
-	if (isNode) {
-		const { createHash } = require("crypto");
-		const hash = createHash("sha1");
-		hash.update(password);
-		return hash.digest("hex");
-	}
-
+export async function createSha1Hash(password: string): Promise<string> {
 	const encodedData = new TextEncoder().encode(password);
 	const buffer = await crypto.subtle.digest("SHA-1", encodedData);
 	const hashArray = Array.from(new Uint8Array(buffer));

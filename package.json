@@ -1,6 +1,6 @@
 {
   "name": "password-tester",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "Test password/phrases to ensure strong entropy and no reuse from a password breach, based on the latest guidance.",
   "files": [
     "dist"

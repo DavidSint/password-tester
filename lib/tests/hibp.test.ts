@@ -44,23 +44,15 @@ describe("createSha1 Tests", () => {
 			writable: true,
 		});
 
-		const referenceError = (() => {
-			try {
-				// Attempting to access an undefined variable, which will throw a ReferenceError to use
-				// @ts-ignore
-				console.log(undefinedVariable);
-			} catch (error) {
-				return error as ReferenceError;
-			}
-		})();
-
-		await createSha1Hash(
-			"123934534f",
-			referenceError as unknown as NodeJS.Process,
-		);
+		await createSha1Hash("123934534f");
 
 		expect(globalThis.crypto.subtle.digest).toHaveBeenCalled();
 
 		globalThis.crypto = cryptoSafeBox;
+	});
+
+  test("node web crypto API hash", async () => {
+		const hash = await createSha1Hash("123934534f");
+    expect(hash).toBe('180ecb35aebc323070f67bb14a5eced920e6d242')
 	});
 });
