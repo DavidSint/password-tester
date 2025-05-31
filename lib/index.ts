@@ -9,7 +9,7 @@ import {
 } from "./helpers";
 import { checkIfPasswordHasBeenPwned } from "./hibp";
 
-export {type PasswordReport, type TestPasswordOptions } from "./helpers";
+export { type PasswordReport, type TestPasswordOptions } from "./helpers";
 
 export async function testPassword(
 	password: string,
