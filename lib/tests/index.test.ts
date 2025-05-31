@@ -1,5 +1,5 @@
-import { MockedFunction, describe, expect, test, vi } from "vitest";
-import { testPassword } from "../main";
+import { type MockedFunction, describe, expect, test, vi } from "vitest";
+import { testPassword } from "..";
 
 describe("Entropy Scenarios", () => {
 	test('only alphabetical "test" entropy', async () => {
