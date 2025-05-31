@@ -1,4 +1,4 @@
-import { MockedFunction, describe, expect, test, vi } from "vitest";
+import { type MockedFunction, describe, expect, test, vi } from "vitest";
 import { checkIfPasswordHasBeenPwned, createSha1Hash } from "../hibp";
 
 describe("Have I Been Pwned", () => {
@@ -51,8 +51,8 @@ describe("createSha1 Tests", () => {
 		globalThis.crypto = cryptoSafeBox;
 	});
 
-  test("node web crypto API hash", async () => {
+	test("node web crypto API hash", async () => {
 		const hash = await createSha1Hash("123934534f");
-    expect(hash).toBe('180ecb35aebc323070f67bb14a5eced920e6d242')
+		expect(hash).toBe("180ecb35aebc323070f67bb14a5eced920e6d242");
 	});
 });

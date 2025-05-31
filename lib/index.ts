@@ -1,14 +1,15 @@
 import {
-	PasswordErrorCode,
-	PasswordReport,
-	PasswordWarningCode,
-	TestPasswordOptions,
+	type PasswordReport,
+	type PasswordWarningCode,
+	type TestPasswordOptions,
 	calculatePasswordEntropy,
 	calculateStrengthLevel,
 	getOptions,
 	mapStrengthLevelToEnum,
 } from "./helpers";
 import { checkIfPasswordHasBeenPwned } from "./hibp";
+
+export {type PasswordReport, type TestPasswordOptions } from "./helpers";
 
 export async function testPassword(
 	password: string,
