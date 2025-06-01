@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>Password Tester Example</title>
-    <script src="../../dist/password-tester.umd.js"></script>
     <style>
       h1 {
         margin: auto;
@@ -62,8 +61,8 @@
         </div>
       </fieldset>
     </form>
-    <script>
-      const { testPassword } = window["password-tester"];
+    <script type="module">
+      import { testPassword } from '../../dist/index.js';
       document.addEventListener("DOMContentLoaded", function () {
         const passwordInput = document.getElementById("password");
         const entropySpan = document.getElementById("password-entropy");
